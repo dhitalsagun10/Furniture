@@ -1,139 +1,152 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./Login.css"; // Import external CSS file
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
   const [errors, setErrors] = useState({});
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentVideo, setCurrentVideo] = useState(0);
+
+  const imageSlides = [
+    "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "https://images.pexels.com/photos/6510953/pexels-photo-6510953.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "https://images.pexels.com/photos/6585620/pexels-photo-6585620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  ];
+
+  const videoSlides = [
+    "https://videos.pexels.com/video-files/7578552/7578552-uhd_2560_1440_30fps.mp4",
+    "https://videos.pexels.com/video-files/18531413/18531413-uhd_2560_1440_60fps.mp4",
+    "https://videos.pexels.com/video-files/5744421/5744421-uhd_2560_1440_30fps.mp4",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % imageSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [imageSlides.length]);
+
+  useEffect(() => {
+    const videoInterval = setInterval(() => {
+      setCurrentVideo((prev) => (prev + 1) % videoSlides.length);
+    }, 10000);
+    return () => clearInterval(videoInterval);
+  }, [videoSlides.length]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    if (firstName.trim().length === 0) newErrors.firstName = "First Name is required";
-    if (lastName.trim().length === 0) newErrors.lastName = "Last Name is required";
-    if (!/^\d{10}$/.test(phone)) newErrors.phone = "Phone number must be 10 digits";
-    if (!email.includes("@")) newErrors.email = "Invalid email";
-    if (password.length < 8) newErrors.password = "Password must be at least 8 characters";
+    if (!email.includes("@")) newErrors.email = "Invalid email address";
+    if (password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      alert("Login successful");
-      setFirstName("");
-      setMiddleName("");
-      setLastName("");
-      setPhone("");
-      setEmail("");
-      setPassword("");
-    }
+    if (Object.keys(newErrors).length === 0) alert("Login successful!");
   };
 
   return (
-<section className="relative flex flex-wrap lg:h-screen lg:items-center">
-  <div className="w-full px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:px-8 lg:py-24">
-    <div className="mx-auto max-w-lg text-center">
-      <h1 className="text-2xl font-bold sm:text-3xl">Get started today!</h1>
+    <section className="bg-gray-900 min-h-screen">
+      <div className="lg:flex lg:min-h-screen">
+        {/* Video Section */}
+        <section className="relative lg:w-1/2 h-screen">
+          <video
+            key={currentVideo}
+            autoPlay
+            muted
+            loop
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source src={videoSlides[currentVideo]} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="relative z-10 flex items-center justify-center h-full bg-black/30">
+            <div className="text-center text-white">
+              <h1 className="text-5xl font-extrabold drop-shadow-lg">
+                Experience Elegance
+              </h1>
+              <p className="mt-4 text-lg leading-relaxed">
+                Furniture that defines luxury and comfort.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      <p className="mt-4 text-gray-500">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Et libero nulla eaque error neque
-        ipsa culpa autem, at itaque nostrum!
+        {/* Image & Login Section */}
+        <section
+          className="relative lg:w-1/2 h-screen flex items-center justify-center"
+          style={{
+            backgroundImage: `url(${imageSlides[currentSlide]})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Login Form with Animation */}
+          <div className="login-form max-w-md px-8 py-10 bg-black/70 rounded-lg shadow-lg relative">
+  {/* Side Lights */}
+  <div className="side-light">
+    <div className="login-form-content relative z-10">
+      <h1 className="text-4xl font-bold text-white text-center">Welcome Back</h1>
+      <p className="mt-4 text-gray-300 text-center">
+        Log in to discover premium collections tailored for you.
       </p>
-    </div>
-
-    <form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
-      <div>
-        <label htmlFor="email" className="sr-only">Email</label>
-
-        <div className="relative">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+        {/* Email Input */}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-300"
+          >
+            Email
+          </label>
           <input
+            id="email"
             type="email"
-            className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 text-white px-4 py-2 focus:ring-blue-500"
+            placeholder="you@example.com"
           />
-
-          <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-              />
-            </svg>
-          </span>
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+          )}
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="password" className="sr-only">Password</label>
-
-        <div className="relative">
+        {/* Password Input */}
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-300"
+          >
+            Password
+          </label>
           <input
+            id="password"
             type="password"
-            className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 text-white px-4 py-2 focus:ring-blue-500"
+            placeholder="Enter your password"
           />
-
-          <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          </span>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+          )}
         </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          No account?
-          <a className="underline" href="#">Sign up</a>
-        </p>
-
         <button
           type="submit"
-          className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
+          className="w-full rounded-lg bg-blue-600 px-6 py-3 text-lg font-medium text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-500 transition"
         >
-          Sign in
+          Log In
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
+</div>
 
-  <div className="relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
-    <img
-      alt=""
-      src="https://images.unsplash.com/photo-1630450202872-e0829c9d6172?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
-      className="absolute inset-0 h-full w-full object-cover"
-    />
-  </div>
-</section>
+
+        </section>
+      </div>
+    </section>
   );
 };
 
